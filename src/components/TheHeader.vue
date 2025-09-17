@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
+import { useUser } from '@/composables/useUser'
+
+const { add } = useUser()
 </script>
 
 <template>
   <div class="header">
     <div class="accaunts">
       <h1>Учетные записи</h1>
-      <Button label="+" />
+      <Button label="+" @click="add" />
     </div>
 
     <p class="hint">

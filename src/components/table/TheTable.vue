@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import TableRow from '@/components/table/TableRow.vue'
+import { useUsersStore } from '@/stores/usersStore'
+
+const usersStore = useUsersStore()
 </script>
 
 <template>
@@ -14,7 +17,7 @@ import TableRow from '@/components/table/TableRow.vue'
       </tr>
     </thead>
     <tbody>
-      <TableRow />
+      <TableRow v-for="user in usersStore.$state.users" :key="user.id" :rowId="user.id" />
     </tbody>
   </table>
 </template>
@@ -22,5 +25,6 @@ import TableRow from '@/components/table/TableRow.vue'
 <style scoped>
 thead td {
   padding-left: 15px;
+  min-width: 230px;
 }
 </style>
