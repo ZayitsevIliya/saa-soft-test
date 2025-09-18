@@ -18,8 +18,18 @@ const isTypeLocal = computed(() => {
 })
 
 const login = ref<string>('')
+const isLoginValid = ref<boolean>(false)
 
 const password = ref<string>('')
+const isPasswordValid = ref<boolean>(false)
+
+function validateLogin(): void {
+  isLoginValid.value = login.value.trim() === ''
+}
+
+function validatePassword(): void {
+  isPasswordValid.value = password.value.trim() === ''
+}
 
 const { remove } = useUser()
 </script>
@@ -33,10 +43,23 @@ const { remove } = useUser()
       <Select style="width: 100%" v-model="userType" :options="selectOptions" />
     </td>
     <td :colspan="isTypeLocal ? 1 : 2">
-      <InputText v-model="login" style="width: 100%" type="text" />
+      <InputText
+        @blur="validateLogin"
+        :invalid="isLoginValid"
+        v-model="login"
+        style="width: 100%"
+        type="text"
+      />
     </td>
     <td v-if="isTypeLocal">
-      <Password v-model="password" style="width: 98%" :feedback="false" toggleMask />
+      <Password
+        @blur="validatePassword"
+        :invalid="isPasswordValid"
+        v-model="password"
+        style="width: 98%"
+        :feedback="false"
+        toggleMask
+      />
     </td>
     <td>
       <Button
