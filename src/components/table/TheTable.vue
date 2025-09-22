@@ -17,7 +17,7 @@ const usersStore = useUsersStore()
       </tr>
     </thead>
     <tbody>
-      <TableRow v-for="user in usersStore.$state.users" :key="user.id" :rowId="user.id" />
+      <TableRow v-for="user in usersStore.$state.users" :key="user.id" :user="user" />
     </tbody>
   </table>
 </template>

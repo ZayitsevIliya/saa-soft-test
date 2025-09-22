@@ -1,15 +1,30 @@
+import type IUser from '@/interfaces/IUser'
 import { useUsersStore } from '@/stores/usersStore'
 
 export function useUser() {
-  const userStore = useUsersStore()
+  const usersStore = useUsersStore()
 
-  const add = () => userStore.addUser()
-  const remove = function (id: number) {
-    userStore.removeUser(id)
+  const addUser = (): void => usersStore.addNewUser()
+
+  const removeUser = function (id: number): void {
+    usersStore.removeUser(id)
+  }
+
+  const saveUser = function (userToSave: IUser): void {
+    const currentUser = usersStore.users.filter((user: IUser) => user.id === userToSave.id)[0]
+
+    currentUser.id = userToSave.id
+    currentUser.mark = userToSave.mark
+    currentUser.typeUser = userToSave.typeUser
+    currentUser.login = userToSave.login
+    currentUser.password = userToSave.password
+
+    usersStore.saveUsers()
   }
 
   return {
-    add,
-    remove,
+    addUser,
+    removeUser,
+    saveUser,
   }
 }

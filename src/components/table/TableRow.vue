@@ -1,61 +1,136 @@
 <script setup lang="ts">
 import { useUser } from '@/composables/useUser'
-import { InputText } from 'primevue'
+import type IUser from '@/interfaces/IUser'
+import type IValidation from '@/interfaces/IValidation'
+import { InputText, type SelectChangeEvent } from 'primevue'
 import { Select } from 'primevue'
 import { Password } from 'primevue'
 import { Button } from 'primevue'
-import { computed, ref } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 
-defineProps(['rowId'])
+const props = defineProps(['user'])
 
-const mark = ref<string>('')
+const errors = reactive<IValidation>({})
 
-const selectOptions: string[] = ['Локальная', 'LDAP']
-const userType = ref<string>(selectOptions[0])
-
-const isTypeLocal = computed(() => {
-  return userType.value === selectOptions[0]
+const user = reactive<IUser>({
+  id: props.user.id,
+  mark: props.user.mark,
+  typeUser: props.user.typeUser,
+  login: props.user.login,
+  password: props.user.password,
 })
 
-const login = ref<string>('')
-const isLoginValid = ref<boolean>(false)
+const validators = {
+  mark: (value: string[]): boolean => {
+    return value.join().length > 50
+  },
 
-const password = ref<string>('')
-const isPasswordValid = ref<boolean>(false)
+  typeUser: (value: string): boolean => {
+    return !value
+  },
 
-function validateLogin(): void {
-  isLoginValid.value = login.value.trim() === ''
+  login: (value: string): boolean => {
+    return !value.trim() || value.length > 100
+  },
+
+  password: (value: string): boolean => {
+    return !value.trim() || value.length > 100
+  },
 }
 
-function validatePassword(): void {
-  isPasswordValid.value = password.value.trim() === ''
+const validateField = (field: keyof IValidation): void => {
+  const value = user[field] as string & string[]
+  const validator = validators[field]
+
+  if (validator) {
+    const hasError = validator(value)
+    if (hasError) {
+      errors[field] = true
+    } else {
+      delete errors[field]
+    }
+  }
 }
 
-const { remove } = useUser()
+const isFormValid = (): boolean => {
+  return (
+    Object.keys(errors).length === 0 &&
+    user.login.trim() !== '' &&
+    (user.password !== '' || user.password === null)
+  )
+}
+
+const selectOptions: string[] = ['Локальная', 'LDAP']
+
+const isTypeLocal = computed(() => {
+  return user.typeUser === selectOptions[0]
+})
+
+const marks = ref<string>(user.mark ? user.mark.join(';') : '')
+
+watch(marks, (newVal) => {
+  user.mark = newVal.split(';')
+})
+
+const handleSelectChange = (event: SelectChangeEvent): void => {
+  user.password = event.value === selectOptions[1] ? null : ''
+
+  if (isFormValid()) {
+    saveUser(user)
+  }
+}
+
+const handleInputBlur = (event: Event): void => {
+  const target = event.target as HTMLInputElement
+  validateField(target.name as keyof IValidation)
+
+  if (isFormValid()) {
+    saveUser(user)
+  }
+}
+
+watch(errors, (newVal) => {
+  console.log(newVal)
+})
+
+const { removeUser, saveUser } = useUser()
 </script>
 
 <template>
   <tr>
     <td>
-      <InputText v-model="mark" type="text" />
+      <InputText
+        @blur="handleInputBlur"
+        :invalid="errors.mark"
+        name="mark"
+        v-model="marks"
+        type="text"
+      />
     </td>
     <td>
-      <Select style="width: 100%" v-model="userType" :options="selectOptions" />
+      <Select
+        @change="handleSelectChange"
+        name="userType"
+        style="width: 100%"
+        v-model="user.typeUser"
+        :options="selectOptions"
+      />
     </td>
     <td :colspan="isTypeLocal ? 1 : 2">
       <InputText
-        @blur="validateLogin"
-        :invalid="isLoginValid"
-        v-model="login"
+        @blur="handleInputBlur"
+        :invalid="errors.login"
+        name="login"
+        v-model="user.login"
         style="width: 100%"
-        type="text"
       />
     </td>
     <td v-if="isTypeLocal">
       <Password
-        @blur="validatePassword"
-        :invalid="isPasswordValid"
-        v-model="password"
+        @blur="handleInputBlur"
+        :invalid="errors.password"
+        name="password"
+        v-model="user.password"
         style="width: 98%"
         :feedback="false"
         toggleMask
@@ -67,7 +142,7 @@ const { remove } = useUser()
         severity="contrast"
         variant="text"
         aria-label="Cancel"
-        @click="remove(rowId)"
+        @click="removeUser(user.id)"
       />
     </td>
   </tr>

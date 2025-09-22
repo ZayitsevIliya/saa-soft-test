@@ -1,7 +1,7 @@
 export default interface IUser {
   id: number
-  mark: string
-  typePassword: string
+  mark: string[]
+  typeUser: 'Локальная' | 'LDPA'
   login: string
-  password: string
+  password: string | null
 }

@@ -2,14 +2,14 @@
 import Button from 'primevue/button'
 import { useUser } from '@/composables/useUser'
 
-const { add } = useUser()
+const { addUser } = useUser()
 </script>
 
 <template>
   <div class="header">
     <div class="accaunts">
       <h1>Учетные записи</h1>
-      <Button label="+" @click="add" />
+      <Button label="+" @click="addUser" />
     </div>
 
     <p class="hint">

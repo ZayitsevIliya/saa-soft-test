@@ -7,17 +7,28 @@ export const useUsersStore = defineStore('users', {
     users: ref<IUser[]>([]),
   }),
   actions: {
-    addUser() {
+    addNewUser(): void {
       this.users.push({
         id: this.users.length,
-        mark: '',
-        typePassword: 'Локальная',
+        mark: [],
+        typeUser: 'Локальная',
         login: '',
         password: '',
       })
     },
-    removeUser(id: number) {
+
+    removeUser(id: number): void {
       this.users = this.users.filter((user) => user.id !== id)
+      this.saveUsers()
+    },
+
+    saveUsers(): void {
+      localStorage.setItem('users', JSON.stringify(this.users))
+    },
+
+    loadUsers(): void {
+      const uploadUsers = localStorage.getItem('users')
+      this.users = uploadUsers ? JSON.parse(uploadUsers) : []
     },
   },
 })
