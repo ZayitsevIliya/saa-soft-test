@@ -23,8 +23,11 @@ const usersStore = useUsersStore()
 </template>
 
 <style scoped>
-thead td {
-  padding-left: 15px;
-  min-width: 230px;
+table {
+  margin-inline: 100px;
+}
+thead td:not(:last-child) {
+  padding: 15px;
+  width: 250px;
 }
 </style>

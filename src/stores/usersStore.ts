@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type IUser from '@/interfaces/IUser'
+import { UserType, type IUser } from '@/interfaces/IUser'
 
 export const useUsersStore = defineStore('users', {
   state: () => ({
@@ -11,7 +11,7 @@ export const useUsersStore = defineStore('users', {
       this.users.push({
         id: this.users.length,
         mark: [],
-        typeUser: 'Локальная',
+        typeUser: UserType.LOCAL_TYPE,
         login: '',
         password: '',
       })

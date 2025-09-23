@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { useUser } from '@/composables/useUser'
-import type IUser from '@/interfaces/IUser'
-import type IValidation from '@/interfaces/IValidation'
-import { InputText, type SelectChangeEvent } from 'primevue'
 import { Select } from 'primevue'
 import { Password } from 'primevue'
 import { Button } from 'primevue'
+import { useUser } from '@/composables/useUser'
+import { useValidation } from '@/composables/useValidation'
 import { ref, computed, reactive, watch } from 'vue'
+import { InputText, type SelectChangeEvent } from 'primevue'
+import { UserType, type IUser } from '@/interfaces/IUser'
 
 const props = defineProps(['user'])
 
-const errors = reactive<IValidation>({})
-
-const user = reactive<IUser>({
+const currentUser = reactive<IUser>({
   id: props.user.id,
   mark: props.user.mark,
   typeUser: props.user.typeUser,
@@ -20,118 +18,69 @@ const user = reactive<IUser>({
   password: props.user.password,
 })
 
-const validators = {
-  mark: (value: string[]): boolean => {
-    return value.join().length > 50
-  },
-
-  typeUser: (value: string): boolean => {
-    return !value
-  },
-
-  login: (value: string): boolean => {
-    return !value.trim() || value.length > 100
-  },
-
-  password: (value: string): boolean => {
-    return !value.trim() || value.length > 100
-  },
+const inputStyles = {
+  localStyle: 'width: 248px',
+  LPDAStyle: 'width: 500px',
 }
 
-const validateField = (field: keyof IValidation): void => {
-  const value = user[field] as string & string[]
-  const validator = validators[field]
-
-  if (validator) {
-    const hasError = validator(value)
-    if (hasError) {
-      errors[field] = true
-    } else {
-      delete errors[field]
-    }
-  }
-}
-
-const isFormValid = (): boolean => {
-  return (
-    Object.keys(errors).length === 0 &&
-    user.login.trim() !== '' &&
-    (user.password !== '' || user.password === null)
-  )
-}
-
-const selectOptions: string[] = ['Локальная', 'LDAP']
+const selectOptions = [UserType.LOCAL_TYPE, UserType.LDPA_TYPE]
 
 const isTypeLocal = computed(() => {
-  return user.typeUser === selectOptions[0]
+  return currentUser.typeUser === UserType.LOCAL_TYPE
 })
 
-const marks = ref<string>(user.mark ? user.mark.join(';') : '')
+const tempMarks = ref<string>(currentUser.mark ? currentUser.mark.join(';') : '')
 
-watch(marks, (newVal) => {
-  user.mark = newVal.split(';')
+watch(tempMarks, (newVal) => {
+  currentUser.mark = newVal.split(';')
 })
 
 const handleSelectChange = (event: SelectChangeEvent): void => {
-  user.password = event.value === selectOptions[1] ? null : ''
+  currentUser.password = event.value === UserType.LDPA_TYPE ? null : ''
 
   if (isFormValid()) {
-    saveUser(user)
+    saveUser(currentUser)
   }
 }
 
-const handleInputBlur = (event: Event): void => {
-  const target = event.target as HTMLInputElement
-  validateField(target.name as keyof IValidation)
-
-  if (isFormValid()) {
-    saveUser(user)
-  }
-}
-
-watch(errors, (newVal) => {
-  console.log(newVal)
-})
-
-const { removeUser, saveUser } = useUser()
+const { saveUser, removeUser } = useUser()
+const { handleInputBlur, isFormValid, userErrors } = useValidation(currentUser)
 </script>
 
 <template>
   <tr>
     <td>
       <InputText
-        @blur="handleInputBlur"
-        :invalid="errors.mark"
         name="mark"
-        v-model="marks"
-        type="text"
+        @blur="handleInputBlur($event, currentUser)"
+        v-model="tempMarks"
+        :invalid="userErrors.mark"
+        style="width: 248px"
       />
     </td>
     <td>
       <Select
         @change="handleSelectChange"
-        name="userType"
-        style="width: 100%"
-        v-model="user.typeUser"
+        v-model="currentUser.typeUser"
         :options="selectOptions"
+        style="width: 248px"
       />
     </td>
     <td :colspan="isTypeLocal ? 1 : 2">
       <InputText
-        @blur="handleInputBlur"
-        :invalid="errors.login"
         name="login"
-        v-model="user.login"
-        style="width: 100%"
+        @blur="handleInputBlur($event, currentUser)"
+        v-model="currentUser.login"
+        :invalid="userErrors.login"
+        :style="isTypeLocal ? inputStyles.localStyle : inputStyles.LPDAStyle"
       />
     </td>
     <td v-if="isTypeLocal">
       <Password
-        @blur="handleInputBlur"
-        :invalid="errors.password"
         name="password"
-        v-model="user.password"
-        style="width: 98%"
+        @blur="handleInputBlur($event, currentUser)"
+        v-model="currentUser.password"
+        :invalid="userErrors.password"
         :feedback="false"
         toggleMask
       />
@@ -142,15 +91,8 @@ const { removeUser, saveUser } = useUser()
         severity="contrast"
         variant="text"
         aria-label="Cancel"
-        @click="removeUser(user.id)"
+        @click="removeUser(currentUser.id)"
       />
     </td>
   </tr>
 </template>
-
-<style scoped>
-td:not(:last-child) {
-  padding-inline: 5px;
-  align-items: center;
-}
-</style>

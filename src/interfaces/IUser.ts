@@ -1,7 +1,12 @@
-export default interface IUser {
+export enum UserType {
+  LOCAL_TYPE = 'Локальная',
+  LDPA_TYPE = 'LDPA',
+}
+
+export interface IUser {
   id: number
   mark: string[]
-  typeUser: 'Локальная' | 'LDPA'
+  typeUser: UserType
   login: string
   password: string | null
 }

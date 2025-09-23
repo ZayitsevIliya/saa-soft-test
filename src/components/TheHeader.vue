@@ -22,12 +22,15 @@ const { addUser } = useUser()
 
 <style scoped>
 .header {
-  padding: 15px;
+  padding-top: 30px;
+  padding-inline: 100px;
 }
 .accaunts {
   display: flex;
   gap: 30px;
   align-items: center;
+
+  min-width: 310px;
 
   padding-bottom: 30px;
 }
