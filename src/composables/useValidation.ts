@@ -22,11 +22,11 @@ export function useValidation(user: IUser) {
     },
 
     login: (value: string): boolean => {
-      return !value.trim() || value.length > 10
+      return !value.trim() || value.length > 100
     },
 
     password: (value: string): boolean => {
-      return !value.trim() || value.length > 10
+      return !value.trim() || value.length > 100
     },
   }
 

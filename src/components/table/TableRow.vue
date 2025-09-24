@@ -26,7 +26,9 @@ const isTypeLocal = computed(() => {
   return currentUser.typeUser === UserType.LOCAL_TYPE
 })
 
-const tempMarks = ref<string>(currentUser.mark ? currentUser.mark.join(';') : '')
+const tempMarks = ref<string>(
+  currentUser.mark ? currentUser.mark.map((mark) => mark.text).join(';') : '',
+)
 
 watch(tempMarks, (newVal) => {
   currentUser.mark = newVal.split(';').map((mark) => ({ text: mark }))
