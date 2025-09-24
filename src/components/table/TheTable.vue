@@ -9,15 +9,15 @@ const usersStore = useUsersStore()
   <table>
     <thead>
       <tr>
-        <td>Метки</td>
-        <td>Тип записи</td>
-        <td>Логин</td>
-        <td>Пароль</td>
-        <td></td>
+        <th>Метки</th>
+        <th>Тип записи</th>
+        <th>Логин</th>
+        <th>Пароль</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
-      <TableRow v-for="user in usersStore.$state.users" :key="user.id" :user="user" />
+      <TableRow v-for="user in usersStore.users" :key="user.id" :user="user" />
     </tbody>
   </table>
 </template>
@@ -26,7 +26,7 @@ const usersStore = useUsersStore()
 table {
   margin-inline: 100px;
 }
-thead td:not(:last-child) {
+thead th:not(:last-child) {
   font-size: 16px;
   color: rgba(0, 0, 0, 0.4);
 

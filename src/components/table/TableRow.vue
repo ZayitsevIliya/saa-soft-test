@@ -5,7 +5,7 @@ import { useValidation } from '@/composables/useValidation'
 import { InputText, Select, Password, Button, type SelectChangeEvent } from 'primevue'
 import { UserType, type IUser } from '@/interfaces/IUser'
 
-const props = defineProps(['user'])
+const props = defineProps<{ user: IUser }>()
 
 const currentUser = reactive<IUser>({
   id: props.user.id,
@@ -20,7 +20,7 @@ const inputStyles = {
   LPDAStyle: 'width: 500px',
 }
 
-const selectOptions = [UserType.LOCAL_TYPE, UserType.LDPA_TYPE]
+const selectOptions = [UserType.LOCAL_TYPE, UserType.LDAP_TYPE]
 
 const isTypeLocal = computed(() => {
   return currentUser.typeUser === UserType.LOCAL_TYPE
@@ -29,11 +29,11 @@ const isTypeLocal = computed(() => {
 const tempMarks = ref<string>(currentUser.mark ? currentUser.mark.join(';') : '')
 
 watch(tempMarks, (newVal) => {
-  currentUser.mark = newVal.split(';')
+  currentUser.mark = newVal.split(';').map((mark) => ({ text: mark }))
 })
 
 const handleSelectChange = (event: SelectChangeEvent): void => {
-  currentUser.password = event.value === UserType.LDPA_TYPE ? null : ''
+  currentUser.password = event.value === UserType.LDAP_TYPE ? null : ''
 
   if (isFormValid()) {
     saveUser(currentUser)
@@ -87,7 +87,7 @@ const { handleInputBlur, isFormValid, userErrors } = useValidation(currentUser)
         icon="pi pi-trash"
         severity="contrast"
         variant="text"
-        aria-label="Cancel"
+        aria-label="delete user"
         @click="removeUser(currentUser.id)"
       />
     </td>

@@ -7,9 +7,9 @@ const { addUser } = useUser()
 
 <template>
   <div class="header">
-    <div class="accaunts">
+    <div class="accounts">
       <h1>Учетные записи</h1>
-      <Button label="+" @click="addUser" />
+      <Button aria-label="add user" label="+" @click="addUser" />
     </div>
 
     <p class="hint">
@@ -25,7 +25,7 @@ const { addUser } = useUser()
   padding-top: 30px;
   padding-inline: 100px;
 }
-.accaunts {
+.accounts {
   display: flex;
   gap: 30px;
   align-items: center;

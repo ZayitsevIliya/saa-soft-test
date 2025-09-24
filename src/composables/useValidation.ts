@@ -40,11 +40,16 @@ export function useValidation(user: IUser) {
   }
 
   const validateField = (field: keyof IValidation): void => {
-    const value = user[field] as string & string[]
-    const validator = validators[field]
-
-    if (validator) {
-      userErrors[field] = validator(value) ? true : false
+    switch (field) {
+      case 'mark':
+        userErrors.mark = validators.mark(user.mark.map((mark) => mark.text))
+        break
+      case 'login':
+        userErrors.login = validators.login(user.login)
+        break
+      case 'password':
+        userErrors.password = validators.password(user.password ?? '')
+        break
     }
   }
 

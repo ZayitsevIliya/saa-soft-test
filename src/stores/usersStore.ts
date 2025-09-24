@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import { UserType, type IUser } from '@/interfaces/IUser'
 
 export const useUsersStore = defineStore('users', {
   state: () => ({
-    users: ref<IUser[]>([]),
+    users: [] as IUser[],
   }),
   getters: {
     validUsersList(): IUser[] {
@@ -16,7 +15,7 @@ export const useUsersStore = defineStore('users', {
   actions: {
     addNewUser(): void {
       this.users.push({
-        id: this.users.length,
+        id: crypto.randomUUID(),
         mark: [],
         typeUser: UserType.LOCAL_TYPE,
         login: '',
@@ -24,7 +23,7 @@ export const useUsersStore = defineStore('users', {
       })
     },
 
-    removeUser(id: number): void {
+    removeUser(id: string): void {
       this.users = this.users.filter((user) => user.id !== id)
       this.saveUsers()
     },

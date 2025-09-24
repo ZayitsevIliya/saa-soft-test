@@ -6,7 +6,7 @@ export function useUser() {
 
   const addUser = (): void => usersStore.addNewUser()
 
-  const removeUser = function (id: number): void {
+  const removeUser = function (id: string): void {
     usersStore.removeUser(id)
   }
 
