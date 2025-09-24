@@ -18,7 +18,7 @@ export function useValidation(user: IUser) {
 
   const validators = {
     mark: (value: string[]): boolean => {
-      return value.join().length > 10
+      return value.join().length > 50
     },
 
     login: (value: string): boolean => {
