@@ -6,6 +6,13 @@ export const useUsersStore = defineStore('users', {
   state: () => ({
     users: ref<IUser[]>([]),
   }),
+  getters: {
+    validUsersList(): IUser[] {
+      return this.users.filter(
+        (user) => user.login.trim() !== '' && (user.password !== '' || user.password === null),
+      )
+    },
+  },
   actions: {
     addNewUser(): void {
       this.users.push({
@@ -23,7 +30,7 @@ export const useUsersStore = defineStore('users', {
     },
 
     saveUsers(): void {
-      localStorage.setItem('users', JSON.stringify(this.users))
+      localStorage.setItem('users', JSON.stringify(this.validUsersList))
     },
 
     loadUsers(): void {

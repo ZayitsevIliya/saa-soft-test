@@ -31,6 +31,6 @@ thead td:not(:last-child) {
   color: rgba(0, 0, 0, 0.4);
 
   padding: 15px;
-  width: 250px;
+  min-width: 250px;
 }
 </style>
