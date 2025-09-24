@@ -27,6 +27,9 @@ table {
   margin-inline: 100px;
 }
 thead td:not(:last-child) {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.4);
+
   padding: 15px;
   width: 250px;
 }

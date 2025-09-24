@@ -1,5 +1,5 @@
-import type IUser from '@/interfaces/IUser'
 import { useUsersStore } from '@/stores/usersStore'
+import { type IUser } from '@/interfaces/IUser'
 
 export function useUser() {
   const usersStore = useUsersStore()

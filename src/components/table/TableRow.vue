@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { Select } from 'primevue'
-import { Password } from 'primevue'
-import { Button } from 'primevue'
+import { ref, computed, reactive, watch } from 'vue'
 import { useUser } from '@/composables/useUser'
 import { useValidation } from '@/composables/useValidation'
-import { ref, computed, reactive, watch } from 'vue'
-import { InputText, type SelectChangeEvent } from 'primevue'
+import { InputText, Select, Password, Button, type SelectChangeEvent } from 'primevue'
 import { UserType, type IUser } from '@/interfaces/IUser'
 
 const props = defineProps(['user'])

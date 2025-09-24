@@ -18,15 +18,15 @@ export function useValidation(user: IUser) {
 
   const validators = {
     mark: (value: string[]): boolean => {
-      return value.join().length > 5
+      return value.join().length > 10
     },
 
     login: (value: string): boolean => {
-      return !value.trim() || value.length > 5
+      return !value.trim() || value.length > 10
     },
 
     password: (value: string): boolean => {
-      return !value.trim() || value.length > 5
+      return !value.trim() || value.length > 10
     },
   }
 
