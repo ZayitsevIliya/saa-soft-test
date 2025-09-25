@@ -26,7 +26,7 @@ const { addUser } = useUser()
   height: 240px;
 
   padding-top: 30px;
-  padding-inline: min(15%, 100px);
+  padding-inline: min(15%, 130px);
 
   position: sticky;
   z-index: 10;
