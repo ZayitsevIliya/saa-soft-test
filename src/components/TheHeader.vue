@@ -44,6 +44,7 @@ const { addUser } = useUser()
 
 .header__hint {
   max-width: max-content;
+  min-width: 220px;
 
   margin: 0;
   padding: 6px;

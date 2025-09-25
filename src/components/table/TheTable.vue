@@ -57,8 +57,8 @@ table {
 
 .table-cell__save-icon,
 .table-cell__delete-icon {
-  width: 42px;
-  min-width: 42px;
+  width: 25px;
+  min-width: 25px;
   background-color: #fff;
 }
 </style>
