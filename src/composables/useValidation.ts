@@ -1,7 +1,8 @@
-import type IValidation from '@/interfaces/IValidation'
-import { type IUser } from '@/interfaces/IUser'
-import { computed, reactive } from 'vue'
 import { useUser } from './useUser'
+import { ref, computed, reactive } from 'vue'
+import { type SelectChangeEvent } from 'primevue'
+import type IValidation from '@/interfaces/IValidation'
+import { type IUser, UserType } from '@/interfaces/IUser'
 
 export function useValidation(user: IUser) {
   const { saveUser } = useUser()
@@ -11,6 +12,8 @@ export function useValidation(user: IUser) {
     login: false,
     password: false,
   })
+
+  const isUserSaved = ref(false)
 
   const hasErrors = computed(() => {
     return Object.values(userErrors).some(Boolean)
@@ -36,6 +39,16 @@ export function useValidation(user: IUser) {
 
     if (isFormValid()) {
       saveUser(user)
+      isUserSaved.value = true
+    }
+  }
+
+  const handleSelectChange = (event: SelectChangeEvent): void => {
+    user.password = event.value === UserType.LDAP_TYPE ? null : ''
+
+    if (isFormValid()) {
+      saveUser(user)
+      isUserSaved.value = true
     }
   }
 
@@ -65,6 +78,8 @@ export function useValidation(user: IUser) {
     validateField,
     isFormValid,
     handleInputBlur,
+    handleSelectChange,
     userErrors,
+    isUserSaved,
   }
 }

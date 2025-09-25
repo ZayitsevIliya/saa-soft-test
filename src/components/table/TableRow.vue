@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, reactive, watch } from 'vue'
 import { useUser } from '@/composables/useUser'
+import { ref, computed, reactive, watch } from 'vue'
 import { useValidation } from '@/composables/useValidation'
-import { InputText, Select, Password, Button, type SelectChangeEvent } from 'primevue'
+import { InputText, Select, Password, Button } from 'primevue'
 import { UserType, type IUser } from '@/interfaces/IUser'
 
 const props = defineProps<{ user: IUser }>()
@@ -15,10 +15,8 @@ const currentUser = reactive<IUser>({
   password: props.user.password,
 })
 
-const inputStyles = {
-  localStyle: 'width: 248px',
-  LPDAStyle: 'width: 500px',
-}
+const { removeUser } = useUser()
+const { handleInputBlur, handleSelectChange, userErrors, isUserSaved } = useValidation(currentUser)
 
 const selectOptions = [UserType.LOCAL_TYPE, UserType.LDAP_TYPE]
 
@@ -33,49 +31,42 @@ const tempMarks = ref<string>(
 watch(tempMarks, (newVal) => {
   currentUser.mark = newVal.split(';').map((mark) => ({ text: mark }))
 })
-
-const handleSelectChange = (event: SelectChangeEvent): void => {
-  currentUser.password = event.value === UserType.LDAP_TYPE ? null : ''
-
-  if (isFormValid()) {
-    saveUser(currentUser)
-  }
-}
-
-const { saveUser, removeUser } = useUser()
-const { handleInputBlur, isFormValid, userErrors } = useValidation(currentUser)
 </script>
 
 <template>
-  <tr>
-    <td>
+  <tr class="user">
+    <td class="user__save-icon">
+      <i v-if="isUserSaved" class="pi pi-check-square"></i>
+    </td>
+    <td class="user__mark">
       <InputText
         name="mark"
         @blur="handleInputBlur($event, currentUser)"
         v-model="tempMarks"
         :invalid="userErrors.mark"
-        style="width: 248px"
+        style="width: 100%"
       />
     </td>
-    <td>
+    <td class="user__type">
       <Select
         @change="handleSelectChange"
         v-model="currentUser.typeUser"
         :options="selectOptions"
-        style="width: 248px"
+        style="width: 100%"
       />
     </td>
-    <td :colspan="isTypeLocal ? 1 : 2">
+    <td class="user__login" :colspan="isTypeLocal ? 1 : 2">
       <InputText
         name="login"
         @blur="handleInputBlur($event, currentUser)"
         v-model="currentUser.login"
         :invalid="userErrors.login"
-        :style="isTypeLocal ? inputStyles.localStyle : inputStyles.LPDAStyle"
+        style="width: 100%"
       />
     </td>
-    <td v-if="isTypeLocal">
+    <td class="user__password" v-if="isTypeLocal">
       <Password
+        class="password"
         name="password"
         @blur="handleInputBlur($event, currentUser)"
         v-model="currentUser.password"
@@ -84,7 +75,7 @@ const { handleInputBlur, isFormValid, userErrors } = useValidation(currentUser)
         toggleMask
       />
     </td>
-    <td>
+    <td class="user__delete-icon">
       <Button
         icon="pi pi-trash"
         severity="contrast"
@@ -95,3 +86,20 @@ const { handleInputBlur, isFormValid, userErrors } = useValidation(currentUser)
     </td>
   </tr>
 </template>
+
+<style scoped>
+.user__save-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 25px;
+  height: 36px;
+
+  color: #00000070;
+}
+
+.user__password > * > *:not(:nth-child(2)) {
+  width: 100%;
+}
+</style>

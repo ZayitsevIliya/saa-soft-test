@@ -8,29 +8,57 @@ const usersStore = useUsersStore()
 <template>
   <table>
     <thead>
-      <tr>
-        <th>Метки</th>
-        <th>Тип записи</th>
-        <th>Логин</th>
-        <th>Пароль</th>
-        <th></th>
+      <tr class="table__header">
+        <th class="table-cell__save-icon"></th>
+        <th class="table-cell__mark">Метки</th>
+        <th class="table-cell__type">Тип записи</th>
+        <th class="table-cell__login">Логин</th>
+        <th class="table-cell__password">Пароль</th>
+        <th class="table-cell__delete-icon"></th>
       </tr>
     </thead>
     <tbody>
-      <TableRow v-for="user in usersStore.users" :key="user.id" :user="user" />
+      <TableRow class="table__row" v-for="user in usersStore.users" :key="user.id" :user="user" />
     </tbody>
   </table>
 </template>
 
 <style scoped>
 table {
-  margin-inline: 100px;
+  margin-left: min(5%, 100px);
 }
-thead th:not(:last-child) {
+
+.table__header {
+  position: sticky;
+
+  height: 40px;
+  top: 240px;
+
+  z-index: 10;
+}
+
+.table-cell__mark,
+.table-cell__type,
+.table-cell__login,
+.table-cell__password {
+  width: 250px;
+
+  border-radius: 4px;
+
+  background-color: rgb(234, 237, 241);
+
   font-size: 16px;
   color: rgba(0, 0, 0, 0.4);
+}
 
-  padding: 15px;
-  min-width: 250px;
+.table-cell__type {
+  min-width: 138px;
+}
+
+.table-cell__save-icon,
+.table-cell__delete-icon {
+  width: 42px;
+  min-width: 42px;
+  background-color: #fff;
 }
 </style>
