@@ -1,5 +1,7 @@
+import { keysOfUser } from './IUser'
+
 export default interface ValidationErrors {
-  mark: boolean
-  login: boolean
-  password: boolean
+  [keysOfUser.USER_MARK]: boolean
+  [keysOfUser.USER_LOGIN]: boolean
+  [keysOfUser.USER_PASSWORD]: boolean
 }

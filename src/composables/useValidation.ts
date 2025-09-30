@@ -1,19 +1,13 @@
-import { useUser } from './useUser'
-import { ref, computed, reactive } from 'vue'
-import { type SelectChangeEvent } from 'primevue'
+import { computed, reactive } from 'vue'
 import type IValidation from '@/interfaces/IValidation'
-import { type IUser, UserType } from '@/interfaces/IUser'
+import { type IUser, keysOfUser } from '@/interfaces/IUser'
 
 export function useValidation(user: IUser) {
-  const { saveUser } = useUser()
-
   const userErrors = reactive<IValidation>({
     mark: false,
     login: false,
     password: false,
   })
-
-  const isUserSaved = ref(false)
 
   const hasErrors = computed(() => {
     return Object.values(userErrors).some(Boolean)
@@ -33,34 +27,15 @@ export function useValidation(user: IUser) {
     },
   }
 
-  const handleInputBlur = (event: Event, user: IUser): void => {
-    const target = event.target as HTMLInputElement
-    validateField(target.name as keyof IValidation)
-
-    if (isFormValid()) {
-      saveUser(user)
-      isUserSaved.value = true
-    }
-  }
-
-  const handleSelectChange = (event: SelectChangeEvent): void => {
-    user.password = event.value === UserType.LDAP_TYPE ? null : ''
-
-    if (isFormValid()) {
-      saveUser(user)
-      isUserSaved.value = true
-    }
-  }
-
   const validateField = (field: keyof IValidation): void => {
     switch (field) {
-      case 'mark':
+      case keysOfUser.USER_MARK:
         userErrors.mark = validators.mark(user.mark.map((mark) => mark.text))
         break
-      case 'login':
+      case keysOfUser.USER_LOGIN:
         userErrors.login = validators.login(user.login)
         break
-      case 'password':
+      case keysOfUser.USER_PASSWORD:
         userErrors.password = validators.password(user.password ?? '')
         break
     }
@@ -77,9 +52,6 @@ export function useValidation(user: IUser) {
   return {
     validateField,
     isFormValid,
-    handleInputBlur,
-    handleSelectChange,
     userErrors,
-    isUserSaved,
   }
 }

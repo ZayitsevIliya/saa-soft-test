@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { UserType, type IUser } from '@/interfaces/IUser'
+import { useStorage } from '@/composables/useStorage'
 
 export const useUsersStore = defineStore('users', {
   state: () => ({
@@ -23,18 +24,22 @@ export const useUsersStore = defineStore('users', {
       })
     },
 
+    updateUser(patch: IUser): void {
+      const userToPatch = this.users.find((user) => user.id === patch.id)
+
+      if (!userToPatch) return
+
+      Object.assign(userToPatch, { ...patch, id: patch.id })
+
+      const { saveUsers } = useStorage()
+      saveUsers()
+    },
+
     removeUser(id: string): void {
       this.users = this.users.filter((user) => user.id !== id)
-      this.saveUsers()
-    },
 
-    saveUsers(): void {
-      localStorage.setItem('users', JSON.stringify(this.validUsersList))
-    },
-
-    loadUsers(): void {
-      const uploadUsers = localStorage.getItem('users')
-      this.users = uploadUsers ? JSON.parse(uploadUsers) : []
+      const { saveUsers } = useStorage()
+      saveUsers()
     },
   },
 })

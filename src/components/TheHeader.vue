@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
-import { useUser } from '@/composables/useUser'
+import { useUsersStore } from '@/stores/usersStore'
 
-const { addUser } = useUser()
+const usersStore = useUsersStore()
 </script>
 
 <template>
   <div class="header">
     <div class="header__add-user">
       <h1 class="header__title">Учетные записи</h1>
-      <Button class="header__button" aria-label="add user" label="+" @click="addUser" />
+      <Button
+        class="header__button"
+        aria-label="add user"
+        label="+"
+        @click="usersStore.addNewUser"
+      />
     </div>
 
     <p class="header__hint">

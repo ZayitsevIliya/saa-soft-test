@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { useUser } from '@/composables/useUser'
 import { ref, computed, reactive, watch } from 'vue'
+import { useUsersStore } from '@/stores/usersStore'
 import { useValidation } from '@/composables/useValidation'
-import { InputText, Select, Password, Button } from 'primevue'
-import { UserType, type IUser } from '@/interfaces/IUser'
+import { InputText, Select, Password, Button, type SelectChangeEvent } from 'primevue'
+import { keysOfUser, UserType, type IUser } from '@/interfaces/IUser'
+import type IValidation from '@/interfaces/IValidation'
+
+const usersStore = useUsersStore()
 
 const props = defineProps<{ user: IUser }>()
 
@@ -15,8 +18,9 @@ const currentUser = reactive<IUser>({
   password: props.user.password,
 })
 
-const { removeUser } = useUser()
-const { handleInputBlur, handleSelectChange, userErrors, isUserSaved } = useValidation(currentUser)
+const { validateField, isFormValid, userErrors } = useValidation(currentUser)
+
+const isUserSaved = ref<boolean>(false)
 
 const selectOptions = [UserType.LOCAL_TYPE, UserType.LDAP_TYPE]
 
@@ -31,6 +35,25 @@ const tempMarks = ref<string>(
 watch(tempMarks, (newVal) => {
   currentUser.mark = newVal.split(';').map((mark) => ({ text: mark }))
 })
+
+const handleInputBlur = (event: Event): void => {
+  const target = event.target as HTMLInputElement
+  validateField(target.name as keyof IValidation)
+
+  if (isFormValid()) {
+    usersStore.updateUser(currentUser)
+    isUserSaved.value = true
+  }
+}
+
+const handleSelectChange = (event: SelectChangeEvent): void => {
+  currentUser.password = event.value === UserType.LDAP_TYPE ? null : ''
+
+  if (isFormValid()) {
+    usersStore.updateUser(currentUser)
+    isUserSaved.value = true
+  }
+}
 </script>
 
 <template>
@@ -40,11 +63,10 @@ watch(tempMarks, (newVal) => {
     </td>
     <td class="user__mark">
       <InputText
-        name="mark"
-        @blur="handleInputBlur($event, currentUser)"
+        :name="keysOfUser.USER_MARK"
+        @blur="handleInputBlur"
         v-model="tempMarks"
         :invalid="userErrors.mark"
-        style="width: 100%"
       />
     </td>
     <td class="user__type">
@@ -52,23 +74,21 @@ watch(tempMarks, (newVal) => {
         @change="handleSelectChange"
         v-model="currentUser.typeUser"
         :options="selectOptions"
-        style="width: 100%"
       />
     </td>
     <td class="user__login" :colspan="isTypeLocal ? 1 : 2">
       <InputText
-        name="login"
-        @blur="handleInputBlur($event, currentUser)"
+        :name="keysOfUser.USER_LOGIN"
+        @blur="handleInputBlur"
         v-model="currentUser.login"
         :invalid="userErrors.login"
-        style="width: 100%"
       />
     </td>
     <td class="user__password" v-if="isTypeLocal">
       <Password
         class="password"
-        name="password"
-        @blur="handleInputBlur($event, currentUser)"
+        :name="keysOfUser.USER_PASSWORD"
+        @blur="handleInputBlur"
         v-model="currentUser.password"
         :invalid="userErrors.password"
         :feedback="false"
@@ -81,7 +101,7 @@ watch(tempMarks, (newVal) => {
         severity="contrast"
         variant="text"
         aria-label="delete user"
-        @click="removeUser(currentUser.id)"
+        @click="usersStore.removeUser(currentUser.id)"
       />
     </td>
   </tr>
@@ -99,6 +119,9 @@ watch(tempMarks, (newVal) => {
   color: #00000070;
 }
 
+.user__mark > *,
+.user__login > *,
+.user__type > *,
 .user__password > * > *:not(:nth-child(2)) {
   width: 100%;
 }

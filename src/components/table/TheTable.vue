@@ -31,7 +31,7 @@ table {
 .table__header {
   position: sticky;
 
-  height: 40px;
+  height: 45px;
   top: 240px;
 
   z-index: 10;
